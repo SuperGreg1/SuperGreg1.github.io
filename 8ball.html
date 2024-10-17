@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Центрированное изображение</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column; /* Вертикальная компоновка */
+            justify-content: center;
+            align-items: center;
+            height: 100vh; /* Высота страницы */
+            margin: 0; /* Убираем отступы */
+            background-color: #000; /* Черный фон */
+            color: rgba(255, 255, 255, 0.5); /* Более прозрачный белый цвет */
+            text-align: center; /* Центрируем текст */
+        }
+        img {
+            width: 150px; /* Устанавливаем ширину изображения */
+            height: auto; /* Автоматическая высота */
+            margin-bottom: 10px; /* Отступ снизу */
+            cursor: pointer; /* Указатель для курсора */
+            transition: transform 0.1s ease; /* Плавный переход для анимации */
+        }
+        img:active {
+            transform: scale(0.9); /* Уменьшаем размер при нажатии */
+        }
+        h1 {
+            font-size: 18px; /* Меньший размер шрифта */
+            margin: 0; /* Убираем отступы */
+            transition: opacity 0.5s ease; /* Плавный переход для прозрачности */
+        }
+    </style>
+</head>
+<body>
+    <img src="8ball.png" alt="8 Ball" id="magicBall">
+    <h1 id="message">Загадайте вопрос и нажмите на шар</h1>
+    <h1 id="typingMessage" style="opacity: 0;"></h1> <!-- Новый элемент для текста с набором -->
+
+    <script>
+        const magicBall = document.getElementById('magicBall');
+        const message = document.getElementById('message');
+        const typingMessage = document.getElementById('typingMessage');
+
+        const responses = [
+            "Да",
+            "Нет",
+            "Наверное",
+            "Не очень",
+            "Я не хочу на это отвечать",
+            "Ну и позор",
+            "Стоп, ты хочешь поесть селёдку?",
+            "Забудь об этом",
+            "Фуу",
+            "А в чём смысл жизни?",
+            "Боги увольняются",
+            "АХАХАХАХАХАХА",
+            "Ни в коем случае",
+            "Конечно"
+        ];
+
+        let canClick = true; // Флаг для отслеживания возможности клика
+
+        magicBall.addEventListener('click', handleBallClick);
+        magicBall.addEventListener('touchstart', handleBallClick); // Поддержка тачпада и мобильных устройств
+
+        function handleBallClick() {
+            if (!canClick) return; // Если нельзя кликать, просто выходим
+            canClick = false; // Запрещаем повторные клики
+
+            fadeOutMessage();
+            typeMessage("БОГИ ДУМАЮТ...");
+        }
+
+        function fadeOutMessage() {
+            message.style.opacity = '0'; // Устанавливаем прозрачность текста на 0
+            setTimeout(() => {
+                message.style.display = 'none'; // Прячем текст после завершения анимации
+            }, 500); // Задержка соответствует времени анимации
+        }
+
+        function typeMessage(text) {
+            typingMessage.style.opacity = '0.5'; // Устанавливаем полупрозрачность текста
+            typingMessage.textContent = ''; // Очищаем текст перед набором
+            let index = 0;
+
+            function typeNextLetter() {
+                if (index < text.length) {
+                    typingMessage.textContent += text.charAt(index); // Добавляем одну букву
+                    index++;
+                    setTimeout(typeNextLetter, 200); // Задержка между буквами
+                } else {
+                    // После завершения набора текста задержка и вывод случайного ответа
+                    setTimeout(() => {
+                        displayRandomResponse();
+                    }, 1000); // Задержка в 1 секунду
+                }
+            }
+
+            typeNextLetter(); // Начинаем набор текста
+        }
+
+        function displayRandomResponse() {
+            const randomIndex = Math.floor(Math.random() * responses.length); // Генерируем случайный индекс
+            const response = responses[randomIndex];
+
+            typingMessage.textContent = ''; // Очищаем текст перед набором ответа
+            typingMessage.style.opacity = '0.5'; // Устанавливаем полупрозрачность текста
+            let index = 0;
+
+            function typeNextLetterResponse() {
+                if (index < response.length) {
+                    typingMessage.textContent += response.charAt(index); // Добавляем одну букву
+                    index++;
+                    setTimeout(typeNextLetterResponse, 200); // Задержка между буквами
+                } else {
+                    // После завершения набора ответа задержка перед исчезновением
+                    setTimeout(() => {
+                        typingMessage.style.opacity = '0'; // Прячем текст
+                        setTimeout(() => {
+                            canClick = true; // Разрешаем кликать снова
+                        }, 2000); // Задержка перед повторным разрешением клика
+                    }, 2000); // Задержка в 2 секунды
+                }
+            }
+
+            typeNextLetterResponse(); // Начинаем набор ответа
+        }
+    </script>
+</body>
+</html>
